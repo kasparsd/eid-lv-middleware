@@ -84,12 +84,12 @@ rm -f target/Library/latvia-eid/lib/*.la
 rm -f target/Library/latvia-eid/share/Latvia-eID-Middleware/*.profile
 
 # generate .bundle (required by Adobe Acrobat)
-./MacOSX/libtool-bundle target/Library/latvia-eid/lib/otlv-pkcs11.so target/Library/latvia-eid/lib
+./MacOSX/libtool-bundle target/Library/latvia-eid/lib/pkcs11/otlv-pkcs11.so target/Library/latvia-eid/lib
 
-cp target/Library/latvia-eid/lib/otlv-pkcs11.so target/Library/latvia-eid/lib/otlv-pkcs11.dylib
+cp target/Library/latvia-eid/lib/pkcs11/otlv-pkcs11.so target/Library/latvia-eid/lib/otlv-pkcs11.dylib
 cp ../latvia-eid.conf.nix target/Library/latvia-eid/etc/latvia-eid.conf
-cp ../openssl/lib/libcrypto.0.9.8.dylib target/Library/latvia-eid/lib/.
-cp ../openssl/lib/libssl.0.9.8.dylib target/Library/latvia-eid/lib/.
+cp ../openssl_osx/lib/libcrypto.0.9.8.dylib target/Library/latvia-eid/lib/.
+cp ../openssl_osx/lib/libssl.0.9.8.dylib target/Library/latvia-eid/lib/.
 
 mkdir -p target/Library/latvia-eid/share/Latvia-eID-Middleware/
 cp ../CHANGES target/Library/latvia-eid/share/Latvia-eID-Middleware/.
@@ -110,47 +110,45 @@ if test ${OSX_RELEASE} = "10.6"; then
 	make install DESTDIR=${BUILDPATH}/target)
 fi
 
-# if ! test -e OpenSC.tokend; then
-#	git clone http://github.com/martinpaljak/OpenSC.tokend.git
-# fi
+# Check out OpenSC.tokend, if not already fetched.
+if ! test -e OpenSC.tokend; then
+	git clone http://github.com/OpenSC/OpenSC.tokend.git
+fi
 
 # refresh remote branches, in case the script has changed the active branch and existing buildslave checkout is used.
-# git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend fetch --all
+git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend fetch --all
+
+exit;
 
 case "${OSX_RELEASE}" in
-	"10.5") git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend checkout --force 10.5-0.12.2; rm -rf OpenSC.tokend/build
+	"10.5") 
+		git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend checkout --force 10.5-0.12.2;
+		rm -rf OpenSC.tokend/build
+
 		if test ${INTEL_ONLY} = "yes"; then
 			sed -e 's/ ppc7400//g' OpenSC.tokend/Tokend.xcodeproj/project.pbxproj > project.tmp
 			mv project.tmp OpenSC.tokend/Tokend.xcodeproj/project.pbxproj
 		fi
 	;;
-	"10.6") git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend checkout --force 10.6-0.12.2; rm -rf OpenSC.tokend/build ;;
+	"10.6") 
+		git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend checkout --force 10.6-0.12.2;
+		rm -rf OpenSC.tokend/build
+	;;
+	"10.10")
+		git --git-dir OpenSC.tokend/.git --work-tree OpenSC.tokend checkout --force yosemite;
+	;;
 esac
-
-if ! test -e build-${OSX_RELEASE}.tar.gz; then
-	case ${OSX_RELEASE} in
-	"10.5")
-		curl http://martinpaljak.net/download/build-10.5.tar.gz -o build-${OSX_RELEASE}.tar.gz
-	;;
-	"10.6")
-		curl http://martinpaljak.net/download/build-10.6.tar.gz -o build-${OSX_RELEASE}.tar.gz
-	;;
-	esac
-fi
-
-# Unpack the binary building components
-if ! test -e OpenSC.tokend/build; then
-	tar -C OpenSC.tokend -xzvf build-${OSX_RELEASE}.tar.gz
-fi
 
 # Create the symlink to OpenSC sources
 test -L OpenSC.tokend/build/opensc-src || ln -sf ${BUILDPATH}/src OpenSC.tokend/build/opensc-src
 
-# build and copy OpenSC.tokend
-xcodebuild -configuration Deployment -project OpenSC.tokend/Tokend.xcodeproj
-mkdir -p target/System/Library/Security/tokend
-cp -R OpenSC.tokend/build/OTLVID.tokend target/System/Library/Security/tokend/.
-rm -fr target/System/Library/Security/tokend/OTLVID.tokend/Contents/MacOS/OTLVID_debug
+# Build and copy OpenSC.tokend
+xcodebuild -target OpenSC -configuration Deployment -project OpenSC.tokend/Tokend.xcodeproj install DSTROOT=${PWD}/target
+exit
+
+#mkdir -p target/Library/Security/tokend
+#cp -R OpenSC.tokend/build/OTLVID.tokend target/Library/Security/tokend/.
+#rm -fr target/System/Library/Security/tokend/OTLVID.tokend/Contents/MacOS/OTLVID_debug
 
 # Build PinTool
 cd ../PinTool
