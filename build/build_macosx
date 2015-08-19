@@ -1,5 +1,6 @@
 !/bin/bash
 set -ex
+cd "$(dirname "$0")"
 
 cd ../opensc-0.12.2
 bash ./MacOSX/build
