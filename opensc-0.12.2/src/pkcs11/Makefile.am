@@ -72,5 +72,5 @@ install-exec-hook:	install-pkcs11DATA
 	done; \
 	$(LN_S) ../libotlvpkcs11$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/otlv-pkcs11$(PKCS11_SUFFIX)"; \
 	$(LN_S) ../libonepinotlvpkcs11$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/onepin-otlv-pkcs11$(PKCS11_SUFFIX)"; \
-	$(LN_S) ../libpkcs11spy$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/pkcs11-spy$(PKCS11_SUFFIX)"; \
+	$(LN_S) ../libpkcs11spy$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/pkcs11-spy$(PKCS11_SUFFIX)";
 endif
