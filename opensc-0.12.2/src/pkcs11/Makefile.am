@@ -65,6 +65,7 @@ else
 PKCS11_SUFFIX=.so
 endif
 install-exec-hook:	install-pkcs11DATA
+	$(MKDIR_P) "$(DESTDIR)$(pkcs11dir)"
 	for l in libotlvpkcs11$(PKCS11_SUFFIX) libonepinotlvpkcs11$(PKCS11_SUFFIX) libpkcs11spy$(PKCS11_SUFFIX); do \
 		rm -f "$(DESTDIR)$(pkcs11dir)/$$l"; \
 		$(LN_S) ../$$l "$(DESTDIR)$(pkcs11dir)/$$l"; \
@@ -72,9 +73,4 @@ install-exec-hook:	install-pkcs11DATA
 	$(LN_S) ../libotlvpkcs11$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/otlv-pkcs11$(PKCS11_SUFFIX)"; \
 	$(LN_S) ../libonepinotlvpkcs11$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/onepin-otlv-pkcs11$(PKCS11_SUFFIX)"; \
 	$(LN_S) ../libpkcs11spy$(PKCS11_SUFFIX) "$(DESTDIR)$(pkcs11dir)/pkcs11-spy$(PKCS11_SUFFIX)"; \
-	$(LN_S) libotlvpkcs11$(PKCS11_SUFFIX) "$(libdir)/otlv-pkcs11$(PKCS11_SUFFIX)"; \
-	$(LN_S) libonepinotlvpkcs11$(PKCS11_SUFFIX) "$(libdir)/onepin-otlv-pkcs11$(PKCS11_SUFFIX)"; \
-	$(LN_S) libpkcs11spy$(PKCS11_SUFFIX) "$(libdir)/pkcs11-spy$(PKCS11_SUFFIX)"; \
-	$(LN_S) libotlvopensc$(PKCS11_SUFFIX) "$(libdir)/otlv-opensc$(PKCS11_SUFFIX)";
-
 endif
