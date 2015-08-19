@@ -7,4 +7,10 @@ if test -f Makefile; then
 fi
 rm -rf *~ *.cache *.m4 config.guess config.log \
 	config.status config.sub depcomp ltmain.sh
+
+#glibtoolize --force
+#aclocal
+#autoheader
+#automake --force-missing --add-missing
+#autoconf # not sure if this is required
 autoreconf --verbose --install --force
