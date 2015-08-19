@@ -1,6 +1,6 @@
 #!/bin/bash
 set -ex
-OSX_RELEASE=${1:-10.6}
+OSX_RELEASE=${1:-10.10}
 INTEL_ONLY=${INTEL_ONLY:-no}
 test -x ./configure || ./bootstrap
 BUILDPATH=${PWD}
@@ -23,6 +23,12 @@ case ${OSX_RELEASE} in
 		export LDFLAGS="-L$(PWD)/../openssl/lib -lcrypto -Wl,-syslibroot,/Developer/SDKs/MacOSX10.6.sdk -arch x86_64 -arch i386"
 		MACOSX_DEPLOYMENT_TARGET=10.6
 		export MACOSX_DEPLOYMENT_TARGET=10.6
+	;;
+	"10.10") 
+		SYSROOT="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.10.sdk" 
+		export CFLAGS="-isysroot $SYSROOT -arch i386 -arch x86_64 -mmacosx-version-min=10.10"
+		MACOSX_DEPLOYMENT_TARGET=10.10
+		export MACOSX_DEPLOYMENT_TARGET=10.10
 	;;
 	*)
 		echo "OSX ${OSX_RELEASE} is not supported!"
