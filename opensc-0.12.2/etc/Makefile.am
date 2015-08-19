@@ -18,6 +18,7 @@ latvia-eid.conf: opensc.conf.in force
 
 sysconf_DATA=#required in order to create dir
 install-exec-hook:	install-sysconfDATA latvia-eid.conf
+	$(MKDIR_P) "$(DESTDIR)$(sysconfdir)"
 	if [ -f "$(DESTDIR)$(sysconfdir)/latvia-eid.conf" ]; then \
 		$(INSTALL_DATA) latvia-eid.conf "$(DESTDIR)$(sysconfdir)/latvia-eid.conf.new"; \
 	else \
